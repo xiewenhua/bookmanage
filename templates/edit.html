@@ -1,0 +1,11 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<form method="post">
+    书名<input type="text" name="bookname" value="{{ book.bookname }}" required>
+    ISBN<input type="text" name="isbn" value="{{ book.isbn }}" required>
+    评分<input type="text" name="score" value="{{ book.score }}">
+    <input class="btn" type="submit" name="submit" value="确认修改">
+</form>
+
+{% endblock %}
