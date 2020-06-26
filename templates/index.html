@@ -12,6 +12,10 @@
     {% for book in books %}
     <li>{{ book.bookname }}-{{ book.isbn }}-{{ book.score }}
         <span class="float-right">
+            <a class="btn" href="{{ url_for('edit',isbn=book.isbn) }}">编辑</a>
+            <form class="inline-form" method="post" action="{{ url_for('delete',isbn=book.isbn) }}">
+                <input class="btn" type="submit" name="delete" value="删除" onclick="return confirm('确认删除？')">
+            </form>
             <a class="douban" href="https://search.douban.com/book/subject_search?search_text={{ book.isbn }}"
                 target="_blank" title="去豆瓣搜索本书">豆瓣</a>
         </span>
