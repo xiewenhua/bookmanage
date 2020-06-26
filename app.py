@@ -14,10 +14,17 @@ db = SQLAlchemy(app)
 app.config['SECRET_KEY'] = 'dev'
 
 
-@app.context_processor
-def infect_user():
-    books = Books.query.all()
-    return dict(books=books)
+@app.route('/search')
+def search():
+    q = request.args.get('q')
+    books = Books.query.filter_by(bookname=q).all()
+    return render_template('search.html', books=books)
+
+
+# @app.context_processor
+# def infect_user():
+#     books = Books.query.all()
+#     return dict(books=books)
 
 
 @app.route('/book/edit/<isbn>', methods=["POST", "GET"])
@@ -66,8 +73,12 @@ def index():
             return redirect(url_for('index'))
         flash('添加成功！')
         return redirect(url_for('index'))
-
-    return render_template('index.html')
+    q = request.args.get('q')
+    if q:
+        books = Books.query.filter_by(bookname=q).all()
+    else:
+        books = Books.query.all()
+    return render_template('index.html', books=books)
 
 
 class Books(db.Model):
