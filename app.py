@@ -27,8 +27,7 @@ def index():
         isbn = request.form.get('isbn')
         score = request.form.get('score')
         if not isbn or not score:
-            print('-----  isbn is null -----')
-            flash("ISBN为必填项！")
+            flash("信息没有填写完整！")
             return redirect(url_for('index'))
         book = Books(isbn=isbn, bookname=bookname, score=float(score))
         db.session.add(book)
@@ -39,7 +38,6 @@ def index():
             return redirect(url_for('index'))
         flash('添加成功！')
         return redirect(url_for('index'))
-    print('####### is Get #######')
 
     return render_template('index.html')
 
