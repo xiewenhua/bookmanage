@@ -20,6 +20,15 @@ def infect_user():
     return dict(books=books)
 
 
+@app.route('/book/delete/<isbn>', methods=["POST"])
+def delete(isbn):
+    book = Books.query.get_or_404(isbn)
+    db.session.delete(book)
+    db.session.commit()
+    flash("删除成功！")
+    return redirect(url_for('index'))
+
+
 @app.route('/', methods=['GET', 'POST'])
 def index():
     if request.method == 'POST':
