@@ -3,8 +3,8 @@
 {% block content %}
 <p>一共{{ books|length }}本书</p>
 <form method="post">
-    书名<input type="text" name="bookname" autocomplete="off" required>
-    ISBN<input type="text" name="isbn" autocomplete="off">
+    书名<input type="text" name="bookname"  required>
+    ISBN<input type="text" name="isbn" >
     评分<input type="text" name="score">
     <input class="btn" type="submit" name="submit" value="添加">
 </form>
