@@ -20,6 +20,25 @@ def infect_user():
     return dict(books=books)
 
 
+@app.route('/book/edit/<isbn>', methods=["POST", "GET"])
+def edit(isbn):
+    book = Books.query.get_or_404(isbn)
+    if request.method == "POST":
+        bookname = request.form.get('bookname')
+        isbn = request.form.get('isbn')
+        score = request.form.get('score')
+        if not isbn or not score:
+            flash("信息没有填写完整！")
+            return redirect(url_for('index'))
+        book.bookname = bookname
+        book.isbn = isbn
+        book.score = score
+        db.session.commit()
+        flash("修改成功！")
+        return redirect(url_for('index'))
+    return render_template("edit.html", book=book)
+
+
 @app.route('/book/delete/<isbn>', methods=["POST"])
 def delete(isbn):
     book = Books.query.get_or_404(isbn)
