@@ -26,16 +26,17 @@ def index():
         bookname = request.form.get('bookname')
         isbn = request.form.get('isbn')
         score = request.form.get('score')
-        if not isbn:
+        if not isbn or not score:
             print('-----  isbn is null -----')
             flash("ISBN为必填项！")
             return redirect(url_for('index'))
+        book = Books(isbn=isbn, bookname=bookname, score=float(score))
+        db.session.add(book)
         try:
-            book = Books(isbn=isbn, bookname=bookname, score=float(score))
-            db.session.add(book)
+            db.session.commit()
         except:
-            return '------Add ERROR-----'
-        db.session.commit()
+            flash("添加失败，数据库中已存在这个ISBN！")
+            return redirect(url_for('index'))
         flash('添加成功！')
         return redirect(url_for('index'))
     print('####### is Get #######')
