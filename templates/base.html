@@ -15,9 +15,11 @@
     {% for message in get_flashed_messages() %}
         <div class="alert">{{ message }}</div>
     {% endfor %}
-    <h2>
+    <h2 >
+        <a href="{{ url_for('index') }}">
         <img alt="Avatar" class="avatar" src="{{ url_for('static', filename='images/avatar.png') }}">
         图书管理页面
+        </a>
     </h2>
     <nav>
         <ul>
