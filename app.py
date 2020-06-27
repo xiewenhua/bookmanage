@@ -6,25 +6,15 @@ from flask import flash
 from flask import redirect
 from flask import url_for
 # import pymysql
+from werkzeug.security import generate_password_hash
+from werkzeug.security import check_password_hash
+import click
 
 app = Flask(__name__)
 db_uri = "mysql+pymysql://root:root@localhost/books"
 app.config['SQLALCHEMY_DATABASE_URI'] = db_uri
 db = SQLAlchemy(app)
 app.config['SECRET_KEY'] = 'dev'
-
-
-@app.route('/search')
-def search():
-    q = request.args.get('q')
-    books = Books.query.filter_by(bookname=q).all()
-    return render_template('search.html', books=books)
-
-
-# @app.context_processor
-# def infect_user():
-#     books = Books.query.all()
-#     return dict(books=books)
 
 
 @app.route('/book/edit/<isbn>', methods=["POST", "GET"])
@@ -85,3 +75,15 @@ class Books(db.Model):
     isbn = db.Column(db.String, primary_key=True)
     bookname = db.Column(db.String)
     score = db.Column(db.Float)
+
+
+class User(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(20))
+    password_hash = db.Column(db.String(128))
+
+    def set_password(self, password):
+        self.password_hash = generate_password_hash(password)
+
+    def validate_password(self, password):
+        return check_password_hash(self.password_hash, password)
