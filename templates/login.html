@@ -1,0 +1,9 @@
+{% extends  'base.html' %}
+{% block content %}
+<h3>登录</h3><br>
+<form method="POST">
+    用户名<br><input type="text" name="username" required><br><br>
+    密码<br><input type="password" name="password" required><br><br>
+    <input class="btn" type="submit" name="sumbit" value="登录">
+</form>
+{% endblock %}
