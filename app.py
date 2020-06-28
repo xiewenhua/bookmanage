@@ -9,12 +9,21 @@ from flask import url_for
 from werkzeug.security import generate_password_hash
 from werkzeug.security import check_password_hash
 import click
+from flask_login import LoginManager
+from flask_login import UserMixin
 
 app = Flask(__name__)
 db_uri = "mysql+pymysql://root:root@localhost/books"
 app.config['SQLALCHEMY_DATABASE_URI'] = db_uri
 db = SQLAlchemy(app)
 app.config['SECRET_KEY'] = 'dev'
+login_manger = LoginManager(app)
+
+
+@login_manger.user_loader
+def load_user(username):
+    user = User.query.get(username)
+    return user
 
 
 @app.cli.command()
@@ -96,7 +105,7 @@ class Books(db.Model):
     score = db.Column(db.Float)
 
 
-class User(db.Model):
+class User(db.Model, UserMixin):
     username = db.Column(db.String(20), primary_key=True)
     password_hash = db.Column(db.String(128))
 
