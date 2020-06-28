@@ -11,6 +11,7 @@ from werkzeug.security import check_password_hash
 import click
 from flask_login import LoginManager
 from flask_login import UserMixin
+from flask_login import login_user
 
 app = Flask(__name__)
 db_uri = "mysql+pymysql://root:root@localhost/books"
@@ -18,6 +19,27 @@ app.config['SQLALCHEMY_DATABASE_URI'] = db_uri
 db = SQLAlchemy(app)
 app.config['SECRET_KEY'] = 'dev'
 login_manger = LoginManager(app)
+
+
+@app.route('/login', methods=['POST', 'GET'])
+def login():
+    if request.method == 'POST':
+        username = request.form['username']
+        password = request.form['password']
+
+        if not username or not password:
+            flash('输入信息不完整,请重新登录！')
+            return redirect(url_for('login'))
+
+        user = User.query.first()
+        if username == user.username and user.validate_password(password):
+            login_user(user)
+            flash('登录成功！')
+            return redirect(url_for('index'))
+
+        flash('密码或用户名不正确，请重新登录！')
+        return redirect(url_for('login'))
+    return render_template('login.html')
 
 
 @login_manger.user_loader
