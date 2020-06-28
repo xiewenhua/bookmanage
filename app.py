@@ -17,6 +17,25 @@ db = SQLAlchemy(app)
 app.config['SECRET_KEY'] = 'dev'
 
 
+@app.cli.command()
+@click.option('--username', prompt=True, help='用户名用于登录')
+@click.option('--password', prompt=True, hide_input=True, confirmation_prompt=True, help='密码用于登录')
+def admin(username, password):
+    db.create_all()
+    user = User.query.first()
+    if user is not None:
+        click.echo('更改中...')
+        user.username = username
+        user.set_password(password)
+    else:
+        click.echo('创建中...')
+        user = User(username=username)
+        user.set_password(password)
+        db.session.add(user)
+    db.session.commit()
+    click.echo('完成!')
+
+
 @app.route('/book/edit/<isbn>', methods=["POST", "GET"])
 def edit(isbn):
     book = Books.query.get_or_404(isbn)
@@ -78,8 +97,7 @@ class Books(db.Model):
 
 
 class User(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(20))
+    username = db.Column(db.String(20), primary_key=True)
     password_hash = db.Column(db.String(128))
 
     def set_password(self, password):
