@@ -2,20 +2,24 @@
 
 {% block content %}
 <p>一共{{ books|length }}本书</p>
+{% if current_user.is_authenticated %}
 <form method="post">
     书名<input type="text" name="bookname"  required>
     ISBN<input type="text" name="isbn" >
     评分<input type="text" name="score">
     <input class="btn" type="submit" name="submit" value="添加">
 </form>
+{% endif %}
 <ul class="book-list">
     {% for book in books %}
     <li>{{ book.bookname }}-{{ book.isbn }}-{{ book.score }}
         <span class="float-right">
+            {% if current_user.is_authenticated %}
             <a class="btn" href="{{ url_for('edit',isbn=book.isbn) }}">编辑</a>
             <form class="inline-form" method="post" action="{{ url_for('delete',isbn=book.isbn) }}">
                 <input class="btn" type="submit" name="delete" value="删除" onclick="return confirm('确认删除？')">
             </form>
+            {% endif %}
             <a class="douban" href="https://search.douban.com/book/subject_search?search_text={{ book.isbn }}"
                 target="_blank" title="去豆瓣搜索本书">豆瓣</a>
         </span>
