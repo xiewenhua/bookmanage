@@ -14,6 +14,7 @@ from flask_login import UserMixin
 from flask_login import login_user
 from flask_login import login_required
 from flask_login import logout_user
+from flask_login import current_user
 
 app = Flask(__name__)
 db_uri = "mysql+pymysql://root:root@localhost/books"
@@ -21,12 +22,13 @@ app.config['SQLALCHEMY_DATABASE_URI'] = db_uri
 db = SQLAlchemy(app)
 app.config['SECRET_KEY'] = 'dev'
 login_manger = LoginManager(app)
+login_manger.login_view='login'
 
 @app.route('/logout')
 @login_required
 def logout():
     logout_user()
-    flash('Goodbye.')
+    flash('登出成功！')
     return redirect(url_for('index'))
 
 @app.route('/login', methods=['POST', 'GET'])
@@ -76,6 +78,7 @@ def admin(username, password):
 
 
 @app.route('/book/edit/<isbn>', methods=["POST", "GET"])
+@login_required
 def edit(isbn):
     book = Books.query.get_or_404(isbn)
     if request.method == "POST":
@@ -95,6 +98,7 @@ def edit(isbn):
 
 
 @app.route('/book/delete/<isbn>', methods=["POST"])
+@login_required
 def delete(isbn):
     book = Books.query.get_or_404(isbn)
     db.session.delete(book)
@@ -102,10 +106,27 @@ def delete(isbn):
     flash("删除成功！")
     return redirect(url_for('index'))
 
+@app.route('/settings',methods=['GET','POST'])
+@login_required
+def settings():
+    if request.method=='POST':
+        name=request.form['name']
+
+        if not name or len(name)>20:
+            flash('请重新输入！')
+            return redirect(url_for('settings'))
+        
+        current_user.name
+        db.session.commit()
+        flash('名字已更新！')
+        return redirect(url_for('index'))
+    return render_template('settings.html')
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
     if request.method == 'POST':
+        if not current_user.is_authenticated:
+            return redirect(url_for('index'))
         bookname = request.form.get('bookname')
         isbn = request.form.get('isbn')
         score = request.form.get('score')
@@ -139,7 +160,7 @@ class User(db.Model, UserMixin):
     username = db.Column(db.String(20), primary_key=True)
     password_hash = db.Column(db.String(128))
 
-    //源码中默认以id作为主键
+    # 源码中默认以id作为主键
     def id(self):
         return self.username
 
