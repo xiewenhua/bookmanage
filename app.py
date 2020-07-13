@@ -21,6 +21,7 @@ app.config['SECRET_KEY'] = 'dev'
 login_manger = LoginManager(app)
 
 
+
 @app.route('/login', methods=['POST', 'GET'])
 def login():
     if request.method == 'POST':
@@ -130,6 +131,9 @@ class Books(db.Model):
 class User(db.Model, UserMixin):
     username = db.Column(db.String(20), primary_key=True)
     password_hash = db.Column(db.String(128))
+
+    def id(self):
+        return self.username
 
     def set_password(self, password):
         self.password_hash = generate_password_hash(password)
