@@ -12,6 +12,8 @@ import click
 from flask_login import LoginManager
 from flask_login import UserMixin
 from flask_login import login_user
+from flask_login import login_required
+from flask_login import logout_user
 
 app = Flask(__name__)
 db_uri = "mysql+pymysql://root:root@localhost/books"
@@ -20,7 +22,12 @@ db = SQLAlchemy(app)
 app.config['SECRET_KEY'] = 'dev'
 login_manger = LoginManager(app)
 
-
+@app.route('/logout')
+@login_required
+def logout():
+    logout_user()
+    flash('Goodbye.')
+    return redirect(url_for('index'))
 
 @app.route('/login', methods=['POST', 'GET'])
 def login():
@@ -132,6 +139,7 @@ class User(db.Model, UserMixin):
     username = db.Column(db.String(20), primary_key=True)
     password_hash = db.Column(db.String(128))
 
+    //源码中默认以id作为主键
     def id(self):
         return self.username
 
