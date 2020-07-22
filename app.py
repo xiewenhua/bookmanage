@@ -53,8 +53,8 @@ def login():
 
 
 @login_manger.user_loader
-def load_user(username):
-    user = User.query.get(username)
+def load_user(id):
+    user = User.query.get(id)
     return user
 
 
@@ -151,18 +151,19 @@ def index():
 
 
 class Books(db.Model):
-    isbn = db.Column(db.String, primary_key=True)
-    bookname = db.Column(db.String)
+    isbn = db.Column(db.String(20), primary_key=True)
+    bookname = db.Column(db.String(20))
     score = db.Column(db.Float)
 
 
 class User(db.Model, UserMixin):
-    username = db.Column(db.String(20), primary_key=True)
+    id=db.Column(db.Integer,primary_key=True)
+    username = db.Column(db.String(20))
     password_hash = db.Column(db.String(128))
 
     # 源码中默认以id作为主键
-    def id(self):
-        return self.username
+    # def id(self):
+    #     return self.username
 
     def set_password(self, password):
         self.password_hash = generate_password_hash(password)
